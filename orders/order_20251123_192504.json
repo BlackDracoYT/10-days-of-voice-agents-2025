@@ -1,0 +1,11 @@
+{
+    "drinkType": "latte",
+    "size": "medium",
+    "milk": "skim",
+    "extras": [
+        "sugar"
+    ],
+    "name": "Ben",
+    "timestamp": "2025-11-23T19:25:04.275748",
+    "session_id": "session_20251123_192504"
+}
