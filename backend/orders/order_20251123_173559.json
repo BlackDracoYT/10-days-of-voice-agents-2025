@@ -1,0 +1,11 @@
+{
+    "drinkType": "espresso",
+    "size": "small",
+    "milk": "skim",
+    "extras": [
+        "honey"
+    ],
+    "name": "Blanks Of It",
+    "timestamp": "2025-11-23T17:35:59.747497",
+    "session_id": "session_20251123_173559"
+}
