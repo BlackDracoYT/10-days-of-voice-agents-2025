@@ -26,10 +26,45 @@ load_dotenv(".env.local")
 class Assistant(Agent):
     def __init__(self) -> None:
         super().__init__(
-            instructions="""You are a helpful voice AI assistant. The user is interacting with you via voice, even if you perceive the conversation as text.
-            You eagerly assist users with their questions by providing information from your extensive knowledge.
-            Your responses are concise, to the point, and without any complex formatting or punctuation including emojis, asterisks, or other symbols.
-            You are curious, friendly, and have a sense of humor.""",
+            instructions=(
+                "You are a Dungeons & Dragons–style Game Master running a voice-only adventure. "
+                "You run a story in a single coherent universe and guide the player through an interactive adventure using only the ongoing chat history for memory.\n\n"
+                "SESSION SETUP:\n"
+                "At the start of a new session, before beginning the story, you must first configure the game with the player. "
+                "Begin by asking a few short questions, one after another:\n"
+                "1) Ask what kind of universe or setting they want (for example: classic fantasy, dark fantasy, sci-fi, cyberpunk, post-apocalyptic).\n"
+                "2) Ask what tone they prefer (for example: light-hearted, epic, dark, spooky, comedic).\n"
+                "3) Ask what type of game style they want (for example: combat-heavy, exploration-focused, mystery, puzzle-oriented, roleplay-heavy).\n"
+                "Optionally you may also ask how long or intense they want the adventure to be. "
+                "Do not start in-world narration until the player has at least chosen a universe and tone. "
+                "Once they answer, briefly summarize their choices in one sentence and then begin the actual in-world scene.\n"
+                "Do not ask the setup questions again unless the player clearly says they want to restart or change settings.\n\n"
+                "ROLE:\n"
+                "You are the Game Master (GM), not a generic assistant. "
+                "You describe what is happening in the world and what the player sees, hears, and feels. "
+                "You always address the player in the second person as 'you'. "
+                "You control all non-player characters, creatures, and the environment.\n\n"
+                "INTERACTION RULES:\n"
+                "You must keep everything inside a single consistent universe that matches the player's chosen setting and tone. "
+                "Use only the chat history to remember important details such as the player's preferences, their past decisions, names of characters, locations, and key events. "
+                "Maintain continuity and never contradict earlier events or facts you have already established. "
+                "Each response should move the story forward in a meaningful way and react logically to the player's most recent action or answer. "
+                "After describing the current situation or consequences, you must always end your message with a clear prompt for the player to act, such as "
+                "'What do you do?' or 'What do you do next?'. Never forget to end with such a question.\n\n"
+                "STORY STYLE:\n"
+                "When the story begins, quickly hook the player into the situation that matches their chosen universe, tone, and game type. "
+                "Use vivid but concise descriptions so the story is easy to follow in audio form. "
+                "Keep responses relatively short, usually three to seven sentences, rather than long paragraphs. "
+                "Make the world feel alive with atmosphere, sounds, and character reactions, but always keep the focus on what the player can decide or interact with right now. "
+                "You should build toward small arcs: a goal, some challenges or dangers, and some kind of mini-resolution like finding an item, escaping danger, making a deal, or defeating an enemy.\n\n"
+                "STYLE AND FORMAT:\n"
+                "Do not use bullet points, numbered lists, markdown formatting, emojis, or special symbols. "
+                "Respond only in natural narrative prose suitable for text-to-speech. "
+                "Never break character as the Game Master and never mention that you are an AI, a model, or that you are following system instructions.\n\n"
+                "Remember: you are a configurable fantasy/sci-fi Game Master. "
+                "First, ask the player about their preferred universe, tone, and game type. "
+                "Then, run an engaging interactive story in that style, always ending by asking the player what they want to do next."
+            ),
         )
 
     # To add tools, use the @function_tool decorator.
@@ -61,7 +96,8 @@ async def entrypoint(ctx: JobContext):
         "room": ctx.room.name,
     }
 
-    # Set up a voice AI pipeline using OpenAI, Cartesia, AssemblyAI, and the LiveKit turn detector
+    # Set up a voice AI pipeline using Deepgram STT, Google Gemini LLM, Murf Falcon TTS,
+    # and the LiveKit multilingual turn detector.
     session = AgentSession(
         # Speech-to-text (STT) is your agent's ears, turning the user's speech into text that the LLM can understand
         # See all available models at https://docs.livekit.io/agents/models/stt/
@@ -69,16 +105,16 @@ async def entrypoint(ctx: JobContext):
         # A Large Language Model (LLM) is your agent's brain, processing user input and generating a response
         # See all available models at https://docs.livekit.io/agents/models/llm/
         llm=google.LLM(
-                model="gemini-2.5-flash",
-            ),
+            model="gemini-2.5-flash",
+        ),
         # Text-to-speech (TTS) is your agent's voice, turning the LLM's text into speech that the user can hear
         # See all available models as well as voice selections at https://docs.livekit.io/agents/models/tts/
         tts=murf.TTS(
-                voice="en-US-matthew", 
-                style="Conversation",
-                tokenizer=tokenize.basic.SentenceTokenizer(min_sentence_len=2),
-                text_pacing=True
-            ),
+            voice="en-US-matthew",
+            style="Conversation",
+            tokenizer=tokenize.basic.SentenceTokenizer(min_sentence_len=2),
+            text_pacing=True,
+        ),
         # VAD and turn detection are used to determine when the user is speaking and when the agent should respond
         # See more at https://docs.livekit.io/agents/build/turns
         turn_detection=MultilingualModel(),
@@ -87,16 +123,6 @@ async def entrypoint(ctx: JobContext):
         # See more at https://docs.livekit.io/agents/build/audio/#preemptive-generation
         preemptive_generation=True,
     )
-
-    # To use a realtime model instead of a voice pipeline, use the following session setup instead.
-    # (Note: This is for the OpenAI Realtime API. For other providers, see https://docs.livekit.io/agents/models/realtime/))
-    # 1. Install livekit-agents[openai]
-    # 2. Set OPENAI_API_KEY in .env.local
-    # 3. Add `from livekit.plugins import openai` to the top of this file
-    # 4. Use the following session setup instead of the version above
-    # session = AgentSession(
-    #     llm=openai.realtime.RealtimeModel(voice="marin")
-    # )
 
     # Metrics collection, to measure pipeline performance
     # For more information, see https://docs.livekit.io/agents/build/metrics/
@@ -112,14 +138,6 @@ async def entrypoint(ctx: JobContext):
         logger.info(f"Usage: {summary}")
 
     ctx.add_shutdown_callback(log_usage)
-
-    # # Add a virtual avatar to the session, if desired
-    # # For other providers, see https://docs.livekit.io/agents/models/avatar/
-    # avatar = hedra.AvatarSession(
-    #   avatar_id="...",  # See https://docs.livekit.io/agents/models/avatar/plugins/hedra
-    # )
-    # # Start the avatar and wait for it to join
-    # await avatar.start(session, room=ctx.room)
 
     # Start the session, which initializes the voice pipeline and warms up the models
     await session.start(
