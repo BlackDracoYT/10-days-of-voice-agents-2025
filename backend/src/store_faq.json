@@ -1,0 +1,38 @@
+[
+    {
+        "question": "What does your startup do?",
+        "answer": "We build simple, intuitive technology that helps businesses automate everyday workflows. Our platform replaces complex tools with a single streamlined solution."
+    },
+    {
+        "question": "Who is this product for?",
+        "answer": "Small teams, solo founders, and growing businesses that want to save time, improve productivity, and scale operations without extra overhead."
+    },
+    {
+        "question": "Do I need technical knowledge to use your product?",
+        "answer": "Not at all. Everything runs through a clean dashboard. If you can use a browser, you can use our platform."
+    },
+    {
+        "question": "Is there a free plan or trial?",
+        "answer": "Yes. We offer a free version so you can explore the product before upgrading. Paid plans unlock automation, analytics, and integrations."
+    },
+    {
+        "question": "How much does it cost?",
+        "answer": "We offer simple pricing. Basic plans are suitable for individuals, while business plans scale with your user and automation needs."
+    },
+    {
+        "question": "Do you integrate with other tools?",
+        "answer": "Yes. We support popular platforms like Slack, Google Workspace, Notion, and Zapier. More integrations are rolling out constantly."
+    },
+    {
+        "question": "How secure is my data?",
+        "answer": "We take privacy seriously. All user data is encrypted and processed using enterprise-grade security standards."
+    },
+    {
+        "question": "Do you offer support?",
+        "answer": "Of course. We provide onboarding assistance, chat support, and priority support for business customers."
+    },
+    {
+        "question": "Can I cancel anytime?",
+        "answer": "Yes. There are no long-term contracts or hidden fees. You stay because you love the product—not because you're locked in."
+    }
+]
