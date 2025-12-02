@@ -37,16 +37,18 @@ interface PreConnectMessageProps {
 }
 
 export function PreConnectMessage({ className, messages = [] }: PreConnectMessageProps) {
+  const showHint = messages.length === 0;
+
   return (
     <AnimatePresence>
-      {messages.length === 0 && (
+      {showHint && (
         <MotionMessage
           {...VIEW_MOTION_PROPS}
-          aria-hidden={messages.length > 0}
+          aria-hidden={!showHint}
           className={cn('pointer-events-none text-center', className)}
         >
-          <ShimmerText className="text-sm font-semibold">
-            Agent is listening, ask it a question
+          <ShimmerText className="text-xs sm:text-sm font-medium text-white/80">
+            The host is ready. Say something when you&apos;re ready to begin.
           </ShimmerText>
         </MotionMessage>
       )}
